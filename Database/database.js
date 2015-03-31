@@ -12,7 +12,7 @@ Database.prototype.init = function(){
 	this.connection = mysql.createConnection({
 		host : 'localhost',
 		user : 'root',
-		password : 'password',
+		password : 'passWord',
 		database : 'shortener'
 	});
 },
