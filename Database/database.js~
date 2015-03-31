@@ -1,0 +1,59 @@
+function Database() {
+	if(typeof this.mysql == "undefined") {
+		this.init();
+	}
+}
+
+Database.prototype.init = function() {
+	var mysql = require('mysql');
+	
+	this.connection = mysql.createConnection({
+		host : 'localhost',
+		user : 'root',
+		password : 'PASSWORD',
+		database : 'shortener'
+	});
+},
+
+Database.prototype.shortenUrl = function(originalUrl, socket) {
+	var crypto = require('crypto');
+
+	var insertShortUrl = crypto.createHash('sha1').update(originalUrl).digest('hex').substring(0, 8);
+
+	var http = "http://";
+	var originalUrl2 = http.concat(originalUrl);
+
+	var query = this.connection.query("INSERT INTO linkki(alkuperainen, lyhennetty) VALUES ('"+originalUrl2+"','"+insertShortUrl+"')", function(err, rows, fields) {
+		if(err) {
+			console.log("insert failed:", err);
+		}else{
+			console.log("insert successful");
+		}
+	});
+},
+
+Database.prototype.returnShort = function(originalUrl, socket) {
+	
+	var query = this.connection.query("SELECT lyhennetty FROM linkki WHERE alkuperainen = 'http://"+originalUrl+"'", function(err, rows, fields) {
+		if(err) {
+			console.log("search query failed:", err);
+		}else{
+			socket.emit('returnShort', JSON.stringify(rows));//lähettää tuloksen takaisen functions.js:ään	
+		}
+	});
+},
+
+Database.prototype.fetchUrl = function(url, socket) {
+	
+	console.log(url);
+
+	var query = this.connection.query("SELECT alkuperainen FROM linkki WHERE lyhennetty = '"+url+"'", function(err, rows, fields) {
+		if(err) {
+			console.log("search query failed:", err);
+		}else{
+			socket.emit('redirect', JSON.stringify(rows));//lähettää tuloksen takaisen functions.js:ään	
+		}
+	});
+},
+
+module.exports = Database;

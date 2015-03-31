@@ -1,0 +1,13 @@
+
+{
+  "name": "sqlharkka",
+  "description": "Tietokanta harjoitus",
+  "version": "0.0.1",
+  "private": true,
+  "main": "server.js",
+  "dependencies": {
+    "express": "4.10.2",
+    "socket.io": "*",
+    "mysql": "*"
+  }
+}
